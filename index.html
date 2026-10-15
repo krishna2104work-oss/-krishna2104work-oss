@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Krishna Portfolio</title>
 <meta name="description" content="Krishna, mechanical engineering and vehicle dynamics. Team Hadron Motorsports, projects and CV.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%236A35F0'/%3E%3Cpath d='M22 16v32M23 33l19-17M28 29l15 19' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Krishna Portfolio">
+<meta property="og:description" content="Final-year mechanical engineering student. Founder of Team Hadron Motorsports. Vehicle dynamics, projects and CV.">
+<meta property="og:image" content="https://krishna2104work-oss.github.io/car-gen2.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <script>document.documentElement.classList.add("intro");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,11 +105,18 @@ h3 { font-size: clamp(1.3rem, 2.2vw, 1.65rem); font-weight: 600; line-height: 1.
 /* hero */
 .hero { text-align: center; padding-block: clamp(40px, 8vw, 88px) 24px; }
 .hero .in { display: grid; gap: 22px; justify-items: center; }
+.hero .ht { display: grid; gap: 22px; justify-items: center; }
 .hero .cta { margin-top: 4px; }
-html.intro .hero .in > * { opacity: 0; transform: translateY(26px); }
-.hero .in > * { transition: opacity 1s cubic-bezier(.2, .7, .2, 1), transform 1s cubic-bezier(.2, .7, .2, 1); }
-.hero .in > :nth-child(2) { transition-delay: .08s; } .hero .in > :nth-child(3) { transition-delay: .16s; }
-.hero .in > :nth-child(4) { transition-delay: .24s; } .hero .in > :nth-child(5) { transition-delay: .36s; }
+html.intro .hero .ht > *, html.intro .hero .in > figure { opacity: 0; transform: translateY(26px); }
+.hero .ht > *, .hero .in > figure { transition: opacity 1s cubic-bezier(.2, .7, .2, 1), transform 1s cubic-bezier(.2, .7, .2, 1); }
+.hero .ht > :nth-child(2) { transition-delay: .08s; } .hero .ht > :nth-child(3) { transition-delay: .16s; }
+.hero .ht > :nth-child(4) { transition-delay: .24s; } .hero .in > figure { transition-delay: .36s; }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero .ht { animation: heroOut linear both; animation-timeline: scroll(root); animation-range: 0 55vh; }
+    @keyframes heroOut { to { opacity: .12; transform: translateY(-28px) scale(.97); } }
+  }
+}
 .stage { width: 100%; margin: 14px 0 0; border-radius: 36px; overflow: hidden; background: radial-gradient(ellipse 70% 62% at 50% 42%, color-mix(in srgb, var(--bg) 92%, transparent) 0%, var(--band) 100%); position: relative; }
 .stage model-viewer { display: block; width: 100%; height: min(64vh, 620px); min-height: 340px; background: transparent; --poster-color: transparent; --progress-bar-color: transparent; }
 .stage .hint { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 13px; color: var(--muted); pointer-events: none; }
@@ -258,10 +273,12 @@ footer a:hover { text-decoration: underline; }
 <div id="v-home">
   <section class="hero">
     <div class="in">
-      <p class="kicker">Team Hadron Motorsports</p>
-      <h1>Cars designed and proven on track.</h1>
-      <p class="sub">I'm Krishna, a final-year mechanical engineering student. I founded my university's first Formula Student team.</p>
-      <div class="cta"><a class="btn" href="#projects">See my projects</a><a class="link" href="#formula-student">My Formula Student story</a></div>
+      <div class="ht">
+        <p class="kicker">Team Hadron Motorsports</p>
+        <h1>Cars designed and proven on track.</h1>
+        <p class="sub">I'm Krishna, a final-year mechanical engineering student. I founded my university's first Formula Student team.</p>
+        <div class="cta"><a class="btn" href="#projects">See my projects</a><a class="link" href="#formula-student">My Formula Student story</a></div>
+      </div>
 
       <!-- 3D model: shown only if car.glb exists and the viewer loads. Otherwise the plan view below stays. -->
       <figure class="viewer" id="heroViewer" hidden style="margin:0;width:100%">
@@ -328,8 +345,8 @@ footer a:hover { text-decoration: underline; }
       <div class="stats">
         <div class="stat rv"><b>1</b><span>The first Formula Student team at my university, which I founded</span></div>
         <div class="stat rv"><b>2</b><span>Car generations led as Vehicle Dynamics Lead</span></div>
-        <div class="stat rv"><b>2025</b><span>Overall champions at Formula Bharat Dynamix</span></div>
-        <div class="stat rv"><b>230 kg</b><span>Team Hadron car, 45/55 front to rear</span></div>
+        <div class="stat rv"><b data-to="2025">2025</b><span>Overall champions at Formula Bharat Dynamix</span></div>
+        <div class="stat rv"><b data-to="230" data-suffix=" kg">230 kg</b><span>Team Hadron car, 45/55 front to rear</span></div>
       </div>
     </div>
   </section>
@@ -630,6 +647,22 @@ var CONTACT = { Email: "", LinkedIn: "", GitHub: "" };
   draw();
   route();
 
+  // numbers count up when they scroll into view (final values are already in the page)
+  function countUp(el) {
+    var to = +el.getAttribute("data-to"), suf = el.getAttribute("data-suffix") || "", t0 = performance.now(), dur = 1600;
+    (function step(now) {
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 4);
+      el.textContent = Math.round(to * e) + suf;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { io.unobserve(en.target); countUp(en.target); } });
+    }, { threshold: 0.4 });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-to]"), function (c) { io.observe(c); });
+  }
+
   // 3D model in the hero. Needs car.glb in the repo; if anything fails the plan view stays.
   var MV_URL = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
   var viewer = document.getElementById("heroViewer"), plan = document.getElementById("heroPlan");
@@ -663,6 +696,15 @@ var CONTACT = { Email: "", LinkedIn: "", GitHub: "" };
       mv.addEventListener("load", function () { tint(); readout(); });
       btn.addEventListener("click", tint);
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", tint);
+      // scrolling the home page turns the car; the first scroll hands control from auto-rotate to the page
+      var heroEl = document.querySelector(".hero"), spun = false;
+      if (!reduce) window.addEventListener("scroll", function () {
+        if (viewer.hidden || document.getElementById("v-home").hidden) return;
+        if (!spun && window.scrollY > 8) { spun = true; mv.removeAttribute("auto-rotate"); }
+        if (!spun) return;
+        var p = Math.max(0, Math.min(1, window.scrollY / (heroEl.offsetHeight + 200)));
+        mv.cameraOrbit = (-35 + p * 80) + "deg 72deg 94%";
+      }, { passive: true });
       viewer.hidden = false; plan.hidden = true;
     })
     .catch(function () { showPlan(); });
